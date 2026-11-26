@@ -1,0 +1,821 @@
+{
+ "attempt": 0,
+ "cell_size": 32,
+ "config": {
+  "ambush_prob": 0.2,
+  "ammo_items": [
+   3,
+   8
+  ],
+  "arena_scale": 1.0,
+  "armor_items": [
+   1,
+   3
+  ],
+  "corridor_height": [
+   96,
+   112,
+   128
+  ],
+  "corridor_width": [
+   2,
+   3,
+   3
+  ],
+  "door_close_prob": 0.5,
+  "door_prob": 0.4,
+  "episode_ticks": 4200,
+  "episode_ticks_range": [
+   3000,
+   4200
+  ],
+  "exit_switch_prob": 0.4,
+  "extra": {},
+  "family": "b",
+  "floor_choices": [
+   0,
+   0,
+   0,
+   8,
+   16,
+   24
+  ],
+  "health_items": [
+   2,
+   6
+  ],
+  "light": [
+   144,
+   224
+  ],
+  "loop_prob": 0.1,
+  "min_path_doors": 0,
+  "monsters": [
+   4,
+   14
+  ],
+  "n_locks": [
+   1,
+   3
+  ],
+  "n_rooms": [
+   7,
+   13
+  ],
+  "room_height": [
+   128,
+   256
+  ],
+  "room_size": [
+   5,
+   14
+  ],
+  "roster_level": 3,
+  "shapes": [
+   [
+    "rect",
+    1.0
+   ],
+   [
+    "l",
+    2.0
+   ],
+   [
+    "pillars",
+    1.5
+   ],
+   [
+    "cross",
+    1.5
+   ],
+   [
+    "octagon",
+    1.5
+   ],
+   [
+    "ring",
+    1.5
+   ]
+  ],
+  "skull_prob": 0.3,
+  "slot_size": [
+   14,
+   22
+  ],
+  "stage": "full",
+  "straight_prob": 0.3,
+  "tier": 4,
+  "weapons": [
+   1,
+   3
+  ]
+ },
+ "config_key": "",
+ "corridor_count": 9,
+ "corridors": [
+  {
+   "a": 1,
+   "b": 0,
+   "door": "normal",
+   "door_sector": 12,
+   "id": 0,
+   "on_path": false,
+   "sectors": [
+    10,
+    12,
+    11
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 4,
+   "b": 6,
+   "door": "none",
+   "door_sector": -1,
+   "id": 1,
+   "on_path": false,
+   "sectors": [
+    13
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 5,
+   "b": 8,
+   "door": "none",
+   "door_sector": -1,
+   "id": 2,
+   "on_path": false,
+   "sectors": [
+    14
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 2,
+   "b": 3,
+   "door": "none",
+   "door_sector": -1,
+   "id": 3,
+   "on_path": true,
+   "sectors": [
+    15
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 6,
+   "b": 7,
+   "door": "none",
+   "door_sector": -1,
+   "id": 4,
+   "on_path": false,
+   "sectors": [
+    16
+   ],
+   "tree": true,
+   "width": 2
+  },
+  {
+   "a": 0,
+   "b": 6,
+   "door": "locked",
+   "door_sector": 19,
+   "id": 5,
+   "on_path": true,
+   "sectors": [
+    17,
+    19,
+    18
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 0,
+   "b": 2,
+   "door": "locked",
+   "door_sector": 22,
+   "id": 6,
+   "on_path": true,
+   "sectors": [
+    20,
+    22,
+    21
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 8,
+   "b": 9,
+   "door": "normal",
+   "door_sector": 25,
+   "id": 7,
+   "on_path": false,
+   "sectors": [
+    23,
+    25,
+    24
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 4,
+   "b": 5,
+   "door": "normal",
+   "door_sector": 28,
+   "id": 8,
+   "on_path": false,
+   "sectors": [
+    26,
+    28,
+    27
+   ],
+   "tree": true,
+   "width": 3
+  }
+ ],
+ "doors": [
+  {
+   "closes": true,
+   "corridor": 0,
+   "lock": 0,
+   "on_path": false,
+   "sector": 12,
+   "x": 336.0,
+   "y": 656.0
+  },
+  {
+   "closes": false,
+   "corridor": 5,
+   "lock": 131,
+   "on_path": true,
+   "sector": 19,
+   "x": 496.0,
+   "y": 1008.0
+  },
+  {
+   "closes": false,
+   "corridor": 6,
+   "lock": 129,
+   "on_path": true,
+   "sector": 22,
+   "x": 336.0,
+   "y": 1232.0
+  },
+  {
+   "closes": true,
+   "corridor": 7,
+   "lock": 0,
+   "on_path": false,
+   "sector": 25,
+   "x": 1872.0,
+   "y": 656.0
+  },
+  {
+   "closes": false,
+   "corridor": 8,
+   "lock": 0,
+   "on_path": false,
+   "sector": 28,
+   "x": 1072.0,
+   "y": 432.0
+  }
+ ],
+ "episode_ticks": 4200,
+ "episode_ticks_range": [
+  3000,
+  4200
+ ],
+ "exit": {
+  "facing": [
+   1,
+   0
+  ],
+  "kind": "switch",
+  "room": 3,
+  "x": 256,
+  "y": 2080
+ },
+ "family": "b",
+ "generator": "doomsday-udmfgen",
+ "generator_version": 1,
+ "grid": [
+  75,
+  73
+ ],
+ "items": [
+  {
+   "category": "weapon",
+   "class": "Chaingun",
+   "ednum": 2002,
+   "kind": "chaingun",
+   "room": 2,
+   "x": 304.0,
+   "y": 1584.0
+  },
+  {
+   "category": "weapon",
+   "class": "RocketLauncher",
+   "ednum": 2003,
+   "kind": "rocketlauncher",
+   "room": 2,
+   "x": 336.0,
+   "y": 1552.0
+  },
+  {
+   "category": "health",
+   "class": "Stimpack",
+   "ednum": 2011,
+   "kind": "stimpack",
+   "room": 2,
+   "x": 336.0,
+   "y": 1488.0
+  },
+  {
+   "category": "health",
+   "class": "Stimpack",
+   "ednum": 2011,
+   "kind": "stimpack",
+   "room": 0,
+   "x": 304.0,
+   "y": 1008.0
+  },
+  {
+   "category": "health",
+   "class": "HealthBonus",
+   "ednum": 2014,
+   "kind": "healthbonus",
+   "room": 4,
+   "x": 784.0,
+   "y": 368.0
+  },
+  {
+   "category": "health",
+   "class": "Medikit",
+   "ednum": 2012,
+   "kind": "medikit",
+   "room": 5,
+   "x": 1296.0,
+   "y": 304.0
+  },
+  {
+   "category": "armor",
+   "class": "BlueArmor",
+   "ednum": 2019,
+   "kind": "bluearmor",
+   "room": 1,
+   "x": 240.0,
+   "y": 368.0
+  },
+  {
+   "category": "armor",
+   "class": "ArmorBonus",
+   "ednum": 2015,
+   "kind": "armorbonus",
+   "room": 1,
+   "x": 240.0,
+   "y": 400.0
+  },
+  {
+   "category": "ammo",
+   "class": "RocketBox",
+   "ednum": 2046,
+   "kind": "rocketbox",
+   "room": 1,
+   "x": 304.0,
+   "y": 336.0
+  },
+  {
+   "category": "ammo",
+   "class": "Clip",
+   "ednum": 2007,
+   "kind": "clip",
+   "room": 9,
+   "x": 2032.0,
+   "y": 944.0
+  },
+  {
+   "category": "ammo",
+   "class": "ClipBox",
+   "ednum": 2048,
+   "kind": "clipbox",
+   "room": 1,
+   "x": 272.0,
+   "y": 336.0
+  },
+  {
+   "category": "ammo",
+   "class": "ClipBox",
+   "ednum": 2048,
+   "kind": "clipbox",
+   "room": 5,
+   "x": 1264.0,
+   "y": 304.0
+  },
+  {
+   "category": "ammo",
+   "class": "ClipBox",
+   "ednum": 2048,
+   "kind": "clipbox",
+   "room": 8,
+   "x": 1872.0,
+   "y": 496.0
+  },
+  {
+   "category": "ammo",
+   "class": "Clip",
+   "ednum": 2007,
+   "kind": "clip",
+   "room": 9,
+   "x": 2000.0,
+   "y": 1008.0
+  },
+  {
+   "category": "ammo",
+   "class": "Cell",
+   "ednum": 2047,
+   "kind": "cell",
+   "room": 8,
+   "x": 1904.0,
+   "y": 432.0
+  },
+  {
+   "category": "ammo",
+   "class": "ClipBox",
+   "ednum": 2048,
+   "kind": "clipbox",
+   "room": 0,
+   "x": 336.0,
+   "y": 976.0
+  }
+ ],
+ "keys": [
+  {
+   "cell": [
+    23,
+    10
+   ],
+   "class": "YellowCard",
+   "color": "yellow",
+   "door_sector": 19,
+   "ednum": 6,
+   "in_branch": true,
+   "lock": 131,
+   "room": 4,
+   "x": 752.0,
+   "y": 336.0
+  },
+  {
+   "cell": [
+    9,
+    13
+   ],
+   "class": "RedSkull",
+   "color": "red",
+   "door_sector": 22,
+   "ednum": 38,
+   "in_branch": true,
+   "lock": 129,
+   "room": 1,
+   "x": 304.0,
+   "y": 432.0
+  }
+ ],
+ "locked_doors": [
+  {
+   "color": "yellow",
+   "corridor": 5,
+   "key_room": 4,
+   "lock": 131,
+   "sector": 19
+  },
+  {
+   "color": "red",
+   "corridor": 6,
+   "key_room": 1,
+   "lock": 129,
+   "sector": 22
+  }
+ ],
+ "map": "MAP01",
+ "monsters": [
+  {
+   "ambush": false,
+   "class": "LostSoul",
+   "ednum": 3006,
+   "kind": "lostsoul",
+   "room": 5,
+   "x": 1232.0,
+   "y": 400.0
+  },
+  {
+   "ambush": false,
+   "class": "LostSoul",
+   "ednum": 3006,
+   "kind": "lostsoul",
+   "room": 3,
+   "x": 368.0,
+   "y": 2000.0
+  },
+  {
+   "ambush": false,
+   "class": "Cacodemon",
+   "ednum": 3005,
+   "kind": "cacodemon",
+   "room": 5,
+   "x": 1424.0,
+   "y": 304.0
+  },
+  {
+   "ambush": false,
+   "class": "LostSoul",
+   "ednum": 3006,
+   "kind": "lostsoul",
+   "room": 9,
+   "x": 2192.0,
+   "y": 944.0
+  },
+  {
+   "ambush": true,
+   "class": "ShotgunGuy",
+   "ednum": 9,
+   "kind": "shotgunguy",
+   "room": 9,
+   "x": 1968.0,
+   "y": 1008.0
+  },
+  {
+   "ambush": false,
+   "class": "HellKnight",
+   "ednum": 69,
+   "kind": "hellknight",
+   "room": 7,
+   "x": 848.0,
+   "y": 1584.0
+  },
+  {
+   "ambush": false,
+   "class": "LostSoul",
+   "ednum": 3006,
+   "kind": "lostsoul",
+   "room": 8,
+   "x": 1904.0,
+   "y": 368.0
+  },
+  {
+   "ambush": false,
+   "class": "ChaingunGuy",
+   "ednum": 65,
+   "kind": "chaingunguy",
+   "room": 9,
+   "x": 2032.0,
+   "y": 1008.0
+  },
+  {
+   "ambush": true,
+   "class": "Zombieman",
+   "ednum": 3004,
+   "kind": "zombieman",
+   "room": 4,
+   "x": 848.0,
+   "y": 368.0
+  },
+  {
+   "ambush": false,
+   "class": "ShotgunGuy",
+   "ednum": 9,
+   "kind": "shotgunguy",
+   "room": 8,
+   "x": 1936.0,
+   "y": 464.0
+  },
+  {
+   "ambush": false,
+   "class": "Demon",
+   "ednum": 3002,
+   "kind": "demon",
+   "room": 9,
+   "x": 2128.0,
+   "y": 944.0
+  },
+  {
+   "ambush": false,
+   "class": "ChaingunGuy",
+   "ednum": 65,
+   "kind": "chaingunguy",
+   "room": 2,
+   "x": 304.0,
+   "y": 1648.0
+  },
+  {
+   "ambush": false,
+   "class": "BaronOfHell",
+   "ednum": 3003,
+   "kind": "baron",
+   "room": 7,
+   "x": 944.0,
+   "y": 1552.0
+  }
+ ],
+ "num_doors": 3,
+ "num_keys": 2,
+ "num_linedefs": 165,
+ "num_locked_doors": 2,
+ "num_monsters": 13,
+ "num_sectors": 29,
+ "num_sidedefs": 195,
+ "num_things": 32,
+ "num_vertices": 137,
+ "path_rooms": [
+  6,
+  0,
+  2,
+  3
+ ],
+ "room_count": 10,
+ "rooms": [
+  {
+   "area_cells": 30,
+   "arena": false,
+   "bbox_cells": [
+    7,
+    29,
+    13,
+    34
+   ],
+   "ceiling": 168,
+   "floor": 24,
+   "id": 0,
+   "sector": 0,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 44,
+   "arena": false,
+   "bbox_cells": [
+    5,
+    9,
+    13,
+    15
+   ],
+   "ceiling": 248,
+   "floor": 16,
+   "id": 1,
+   "sector": 1,
+   "shape": "octagon"
+  },
+  {
+   "area_cells": 48,
+   "arena": false,
+   "bbox_cells": [
+    7,
+    45,
+    13,
+    53
+   ],
+   "ceiling": 200,
+   "floor": 0,
+   "id": 2,
+   "sector": 2,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 45,
+   "arena": false,
+   "bbox_cells": [
+    8,
+    59,
+    13,
+    68
+   ],
+   "ceiling": 136,
+   "floor": 0,
+   "id": 3,
+   "sector": 3,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 30,
+   "arena": false,
+   "bbox_cells": [
+    22,
+    9,
+    28,
+    14
+   ],
+   "ceiling": 192,
+   "floor": 8,
+   "id": 4,
+   "sector": 4,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 67,
+   "arena": false,
+   "bbox_cells": [
+    37,
+    7,
+    48,
+    16
+   ],
+   "ceiling": 248,
+   "floor": 8,
+   "id": 5,
+   "sector": 5,
+   "shape": "l"
+  },
+  {
+   "area_cells": 84,
+   "arena": false,
+   "bbox_cells": [
+    20,
+    23,
+    31,
+    31
+   ],
+   "ceiling": 248,
+   "floor": 0,
+   "id": 6,
+   "sector": 6,
+   "shape": "octagon"
+  },
+  {
+   "area_cells": 56,
+   "arena": false,
+   "bbox_cells": [
+    21,
+    46,
+    31,
+    52
+   ],
+   "ceiling": 200,
+   "floor": 8,
+   "id": 7,
+   "sector": 7,
+   "shape": "octagon"
+  },
+  {
+   "area_cells": 72,
+   "arena": false,
+   "bbox_cells": [
+    56,
+    5,
+    62,
+    17
+   ],
+   "ceiling": 168,
+   "floor": 24,
+   "id": 8,
+   "sector": 8,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 65,
+   "arena": false,
+   "bbox_cells": [
+    57,
+    28,
+    70,
+    33
+   ],
+   "ceiling": 224,
+   "floor": 8,
+   "id": 9,
+   "sector": 9,
+   "shape": "rect"
+  }
+ ],
+ "seed": 1001,
+ "solvability": {
+  "exit_reachable": true,
+  "keys_collected": [
+   "red",
+   "yellow"
+  ],
+  "keys_necessary": {
+   "red": true,
+   "yellow": true
+  },
+  "method": "vertex flood fill on the emitted cell grid with key fixpoint (generator-internal)",
+  "reachable_vertices": 620,
+  "solvable": true
+ },
+ "solvable": true,
+ "source_group": "udmfgen:full-b-v1",
+ "stage": "full",
+ "start": {
+  "angle": 167,
+  "room": 6,
+  "x": 890,
+  "y": 888
+ },
+ "tier": 4,
+ "wad_sha256": "87b3e5f3c883b1c264d46a184ea650db4e7ddb37e20ceece99d22f45dfb5abbc"
+}

@@ -1,0 +1,299 @@
+{
+ "attempt": 0,
+ "cell_size": 32,
+ "config": {
+  "ambush_prob": 0.2,
+  "ammo_items": [
+   0,
+   2
+  ],
+  "arena_scale": 1.0,
+  "armor_items": [
+   0,
+   1
+  ],
+  "corridor_height": [
+   96,
+   112,
+   128
+  ],
+  "corridor_width": [
+   2,
+   3
+  ],
+  "door_close_prob": 0.5,
+  "door_prob": 0.6,
+  "episode_ticks": 2100,
+  "episode_ticks_range": [
+   2100,
+   4200
+  ],
+  "exit_switch_prob": 0.4,
+  "extra": {},
+  "family": "a",
+  "floor_choices": [
+   0,
+   0,
+   0,
+   8,
+   16,
+   24
+  ],
+  "health_items": [
+   0,
+   2
+  ],
+  "light": [
+   144,
+   224
+  ],
+  "loop_prob": 0.15,
+  "min_path_doors": 1,
+  "monsters": [
+   0,
+   0
+  ],
+  "n_locks": [
+   0,
+   0
+  ],
+  "n_rooms": [
+   3,
+   7
+  ],
+  "room_height": [
+   128,
+   256
+  ],
+  "room_size": [
+   5,
+   14
+  ],
+  "roster_level": 0,
+  "shapes": [
+   [
+    "rect",
+    3.0
+   ],
+   [
+    "l",
+    1.5
+   ],
+   [
+    "pillars",
+    1.0
+   ],
+   [
+    "cross",
+    1.0
+   ],
+   [
+    "octagon",
+    1.0
+   ]
+  ],
+  "skull_prob": 0.3,
+  "slot_size": [
+   14,
+   22
+  ],
+  "stage": "doors",
+  "straight_prob": 0.5,
+  "tier": 2,
+  "weapons": [
+   0,
+   0
+  ]
+ },
+ "config_key": "",
+ "corridor_count": 3,
+ "corridors": [
+  {
+   "a": 0,
+   "b": 1,
+   "door": "none",
+   "door_sector": -1,
+   "id": 0,
+   "on_path": true,
+   "sectors": [
+    4
+   ],
+   "tree": true,
+   "width": 2
+  },
+  {
+   "a": 1,
+   "b": 3,
+   "door": "normal",
+   "door_sector": 7,
+   "id": 1,
+   "on_path": true,
+   "sectors": [
+    5,
+    7,
+    6
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 0,
+   "b": 2,
+   "door": "normal",
+   "door_sector": 10,
+   "id": 2,
+   "on_path": false,
+   "sectors": [
+    8,
+    10,
+    9
+   ],
+   "tree": true,
+   "width": 2
+  }
+ ],
+ "doors": [
+  {
+   "closes": true,
+   "corridor": 1,
+   "lock": 0,
+   "on_path": true,
+   "sector": 7,
+   "x": 784.0,
+   "y": 752.0
+  },
+  {
+   "closes": true,
+   "corridor": 2,
+   "lock": 0,
+   "on_path": false,
+   "sector": 10,
+   "x": 592.0,
+   "y": 320.0
+  }
+ ],
+ "episode_ticks": 2100,
+ "episode_ticks_range": [
+  2100,
+  4200
+ ],
+ "exit": {
+  "facing": [
+   0,
+   -1
+  ],
+  "kind": "switch",
+  "room": 3,
+  "x": 960,
+  "y": 832
+ },
+ "family": "a",
+ "generator": "doomsday-udmfgen",
+ "generator_version": 1,
+ "grid": [
+  39,
+  33
+ ],
+ "items": [],
+ "keys": [],
+ "locked_doors": [],
+ "map": "MAP01",
+ "monsters": [],
+ "num_doors": 2,
+ "num_keys": 0,
+ "num_linedefs": 67,
+ "num_locked_doors": 0,
+ "num_monsters": 0,
+ "num_sectors": 11,
+ "num_sidedefs": 77,
+ "num_things": 1,
+ "num_vertices": 57,
+ "path_rooms": [
+  0,
+  1,
+  3
+ ],
+ "room_count": 4,
+ "rooms": [
+  {
+   "area_cells": 30,
+   "arena": false,
+   "bbox_cells": [
+    11,
+    7,
+    17,
+    12
+   ],
+   "ceiling": 192,
+   "floor": 0,
+   "id": 0,
+   "sector": 0,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 68,
+   "arena": false,
+   "bbox_cells": [
+    10,
+    20,
+    19,
+    28
+   ],
+   "ceiling": 184,
+   "floor": 24,
+   "id": 1,
+   "sector": 1,
+   "shape": "octagon"
+  },
+  {
+   "area_cells": 35,
+   "arena": false,
+   "bbox_cells": [
+    27,
+    9,
+    34,
+    14
+   ],
+   "ceiling": 200,
+   "floor": 16,
+   "id": 2,
+   "sector": 2,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 30,
+   "arena": false,
+   "bbox_cells": [
+    26,
+    21,
+    32,
+    26
+   ],
+   "ceiling": 176,
+   "floor": 0,
+   "id": 3,
+   "sector": 3,
+   "shape": "rect"
+  }
+ ],
+ "seed": 8,
+ "solvability": {
+  "exit_reachable": true,
+  "keys_collected": [],
+  "keys_necessary": {},
+  "method": "vertex flood fill on the emitted cell grid with key fixpoint (generator-internal)",
+  "reachable_vertices": 160,
+  "solvable": true
+ },
+ "solvable": true,
+ "source_group": "udmfgen:doors-a-v1",
+ "stage": "doors",
+ "start": {
+  "angle": 300,
+  "room": 0,
+  "x": 447,
+  "y": 322
+ },
+ "tier": 2,
+ "wad_sha256": "6f1fccfe919b19a069d9e02243e28373569d5bfd2bec24c4d36c858d91f7fa15"
+}

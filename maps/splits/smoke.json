@@ -1,0 +1,266 @@
+{
+  "schema_version": "1.0",
+  "split": "smoke",
+  "description": "Pipeline smoke tests only. Trivial template maps; never used to claim generalisation. May also appear in train; may never appear in val/test.",
+  "created_utc": "2026-11-26",
+  "owner": "evaluation-and-generalization-researcher",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "maps": [
+    {
+      "id": "two_rooms",
+      "wad": "maps/two_rooms.wad",
+      "map": "MAP01",
+      "wad_sha256": "24f8fe53389a76c07ee09c3d25aa136d3fc95ad0e1c07357ee43082a65ac352a",
+      "source_group": "template_two_rooms",
+      "source": "devforge-doom-template maps/",
+      "license": "template (same as repository)",
+      "tier": 2,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "door",
+        "monster",
+        "exit"
+      ],
+      "notes": "Template sanity map: one door, one monster, an exit (maps/README.md). validate.py default map."
+    },
+    {
+      "id": "fx_tiny_room",
+      "wad": "tests/fixtures/57a739138e7e276d.wad",
+      "map": "MAP01",
+      "wad_sha256": "5ef25643d0ad741d71895f5ba4ffd8bcc136f092afa5a0fab2bf549be6e2d4ef",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": null,
+      "tier_basis": "none",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "empty"
+      ],
+      "notes": "grid '####/#P.#/####'. Env sanity only."
+    },
+    {
+      "id": "fx_corridor_empty",
+      "wad": "tests/fixtures/2f617ad2aa6b5618.wad",
+      "map": "MAP01",
+      "wad_sha256": "a4822bc42e448f3174d41c1173438587d0c454db73a6143172ab3c53160b032b",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": null,
+      "tier_basis": "none",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "empty"
+      ],
+      "notes": "grid '#P..#'. Stuck/coverage metric sanity (no objectives)."
+    },
+    {
+      "id": "fx_zombie_adjacent",
+      "wad": "tests/fixtures/68d6a90a9de31bb8.wad",
+      "map": "MAP01",
+      "wad_sha256": "57510160005fdff98c6aa942ad8b51ddb4855ba3e6287908031e051f8f8de068",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 1,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "monster"
+      ],
+      "notes": "grid '#P.z#'."
+    },
+    {
+      "id": "fx_stim_zombie",
+      "wad": "tests/fixtures/78a88879a8fdeb46.wad",
+      "map": "MAP01",
+      "wad_sha256": "6e02349e701fee1a17f23d73cdf42864495dbb85f02b0e96548cf1f96d466393",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 1,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "monster",
+        "item"
+      ],
+      "notes": "grid '#P..h..z#'."
+    },
+    {
+      "id": "fx_imp_corridor",
+      "wad": "tests/fixtures/99c8410f05906e0e.wad",
+      "map": "MAP01",
+      "wad_sha256": "2510a5161241d52c42a94f10d75032331aa5b8741effa0ce6cfa496f0bb1a43c",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 1,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "monster",
+        "projectile"
+      ],
+      "notes": "grid '#P......i#'. Imp kills a NOOP player."
+    },
+    {
+      "id": "fx_lethal_c",
+      "wad": "tests/fixtures/279106a4a09e9579.wad",
+      "map": "MAP01",
+      "wad_sha256": "1bab1c72d9ded543aa1486232e84ae97c6437bba48e42078c23832fe3754c559",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 1,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "monster",
+        "lethal"
+      ],
+      "notes": "grid '#P......c#'. Kills a NOOP player in 65 steps (MEASURED). Early-death metric check."
+    },
+    {
+      "id": "fx_door_zombie",
+      "wad": "tests/fixtures/509aca7cabb8cd7f.wad",
+      "map": "MAP01",
+      "wad_sha256": "5c8d780264efc0d513f1338f8303dd140367d20a25207730f0888a464b7ec85c",
+      "source_group": "template_fixtures_layout_dz",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 2,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "door",
+        "monster"
+      ],
+      "notes": "grid '#P.....z#/#..D....#'. SAME layout as fx_door_zombie_shifted (translated): different sha256, same source_group."
+    },
+    {
+      "id": "fx_door_zombie_shifted",
+      "wad": "tests/fixtures/c70e4f3a64c9f8f9.wad",
+      "map": "MAP01",
+      "wad_sha256": "471e58a3646ca936114a4ada87c5b8c9f840141b238fc9447c89ecf89fd02d3e",
+      "source_group": "template_fixtures_layout_dz",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 2,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "door",
+        "monster",
+        "near_duplicate"
+      ],
+      "notes": "Translated copy of fx_door_zombie (tests/test_env.py translation-invariance test)."
+    },
+    {
+      "id": "fx_door_between_zombies",
+      "wad": "tests/fixtures/5c688a052900e964.wad",
+      "map": "MAP01",
+      "wad_sha256": "64821326e4237dedd8d509eba1a400f43947fd0e7576d527d8f504be7c3cf581",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 2,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "door",
+        "monster"
+      ],
+      "notes": "grid '#z.P..D..z#'."
+    },
+    {
+      "id": "fx_exit_only",
+      "wad": "tests/fixtures/6a392a907969372f.wad",
+      "map": "MAP01",
+      "wad_sha256": "65e8c9c3c9ca1cb4a3b36099506e2212514a754e1b1d65058244a425277a4d85",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 2,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "exit"
+      ],
+      "notes": "grid '#P...E#'. Completion-metric sanity."
+    },
+    {
+      "id": "fx_door_exit",
+      "wad": "tests/fixtures/9a5147dc56a65733.wad",
+      "map": "MAP01",
+      "wad_sha256": "8b08151fa363f082ae79ba30e4bb3e1970eea65c8ea70c5ba5873e727282ab01",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 2,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "door",
+        "exit"
+      ],
+      "notes": "grid '#P..D...E#'. Door-opened metric check (USE-spam bounces the door; MEASURED)."
+    },
+    {
+      "id": "fx_key_locked_exit",
+      "wad": "tests/fixtures/e7ab54fb6834ffa3.wad",
+      "map": "MAP01",
+      "wad_sha256": "ea6a0b17bca7beae8dc928e9c3b6ced51eceacf1f3c1421d7a98a698a966445e",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 3,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "key",
+        "locked_door",
+        "exit"
+      ],
+      "notes": "grid '#P.r..R...E#'. Red key -> red door -> exit. Key/locked-door metric check."
+    },
+    {
+      "id": "fx_locked_no_key",
+      "wad": "tests/fixtures/7965e3db9e16c412.wad",
+      "map": "MAP01",
+      "wad_sha256": "64b0590c1a250fc94c4bab676dc6494b528c5680f915cb1056fa158211e6d508",
+      "source_group": "template_fixtures",
+      "source": "devforge-doom-template (tests/fixtures.py layouts)",
+      "license": "template (same as repository)",
+      "tier": 3,
+      "tier_basis": "mechanic",
+      "episode_ticks": 2100,
+      "role": "smoke",
+      "tags": [
+        "locked_door",
+        "exit",
+        "negative_control"
+      ],
+      "notes": "grid '#P..B.E#'. Locked door with no key in the level: exit unreachable. Negative control."
+    }
+  ]
+}

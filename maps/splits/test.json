@@ -1,0 +1,312 @@
+{
+ "schema_version": "1.0",
+ "split": "test",
+ "description": "Held-out test, PROVISIONAL AND INCOMPLETE: freedoom1 E4 only. Access logged in reports/eval/test_access_log.jsonl. Built by training.eval.build_splits.",
+ "created_utc": "2026-11-26",
+ "owner": "evaluation-and-generalization-researcher",
+ "seeds": [
+  20000,
+  20001,
+  20002,
+  20003,
+  20004,
+  20005,
+  20006,
+  20007,
+  20008,
+  20009
+ ],
+ "generated_by": "uv run --no-sync python -m training.eval.build_splits --write",
+ "status": "INCOMPLETE",
+ "incomplete": true,
+ "incomplete_reason": "Violates EVALUATION_PROTOCOL.md \u00a71.1 'test must contain a source family with no group in train': freedoom1 E4 is the same Freedoom project (authors, textures) as freedoom1 E1-E2 and freedoom2 in train. A third-party family is pending an oss-scout licence check and main-session approval. Completing this manifest replaces it (still test v1, no test run has been made); after the first logged test run any change is test_v2. Tier coverage: no tier 1 or tier 3 maps.",
+ "maps": [
+  {
+   "id": "fd1_e4m1",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M1",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 4,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door",
+    "key",
+    "locked_door"
+   ],
+   "notes": "sectors=324 doors=11 locked=2 format=doom | static_rule_v1: lock_colours=red,yellow locked_sectors=2 doors=11 static_monsters=112 sectors=324",
+   "tier_inputs": {
+    "sectors": 324,
+    "doors": 11,
+    "locked_sectors": 2,
+    "lock_colours": [
+     "red",
+     "yellow"
+    ],
+    "static_monsters": 112,
+    "static_keys": 2
+   }
+  },
+  {
+   "id": "fd1_e4m2",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M2",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 4,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door",
+    "key",
+    "locked_door"
+   ],
+   "notes": "sectors=830 doors=35 locked=8 format=doom | static_rule_v1: lock_colours=blue,red,yellow locked_sectors=8 doors=35 static_monsters=324 sectors=830",
+   "tier_inputs": {
+    "sectors": 830,
+    "doors": 35,
+    "locked_sectors": 8,
+    "lock_colours": [
+     "blue",
+     "red",
+     "yellow"
+    ],
+    "static_monsters": 324,
+    "static_keys": 3
+   }
+  },
+  {
+   "id": "fd1_e4m3",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M3",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 4,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door",
+    "key",
+    "locked_door"
+   ],
+   "notes": "sectors=417 doors=17 locked=4 format=doom | static_rule_v1: lock_colours=blue,red,yellow locked_sectors=4 doors=17 static_monsters=203 sectors=417",
+   "tier_inputs": {
+    "sectors": 417,
+    "doors": 17,
+    "locked_sectors": 4,
+    "lock_colours": [
+     "blue",
+     "red",
+     "yellow"
+    ],
+    "static_monsters": 203,
+    "static_keys": 3
+   }
+  },
+  {
+   "id": "fd1_e4m4",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M4",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 4,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door",
+    "key",
+    "locked_door"
+   ],
+   "notes": "sectors=395 doors=20 locked=1 format=doom | static_rule_v1: lock_colours=yellow locked_sectors=1 doors=20 static_monsters=166 sectors=395",
+   "tier_inputs": {
+    "sectors": 395,
+    "doors": 20,
+    "locked_sectors": 1,
+    "lock_colours": [
+     "yellow"
+    ],
+    "static_monsters": 166,
+    "static_keys": 2
+   }
+  },
+  {
+   "id": "fd1_e4m5",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M5",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 4,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door",
+    "key",
+    "locked_door"
+   ],
+   "notes": "sectors=401 doors=14 locked=4 format=doom | static_rule_v1: lock_colours=red,yellow locked_sectors=4 doors=14 static_monsters=188 sectors=401",
+   "tier_inputs": {
+    "sectors": 401,
+    "doors": 14,
+    "locked_sectors": 4,
+    "lock_colours": [
+     "red",
+     "yellow"
+    ],
+    "static_monsters": 188,
+    "static_keys": 2
+   }
+  },
+  {
+   "id": "fd1_e4m6",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M6",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 4,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door",
+    "key",
+    "locked_door"
+   ],
+   "notes": "sectors=518 doors=21 locked=3 format=doom | static_rule_v1: lock_colours=blue,red,yellow locked_sectors=3 doors=21 static_monsters=247 sectors=518",
+   "tier_inputs": {
+    "sectors": 518,
+    "doors": 21,
+    "locked_sectors": 3,
+    "lock_colours": [
+     "blue",
+     "red",
+     "yellow"
+    ],
+    "static_monsters": 247,
+    "static_keys": 3
+   }
+  },
+  {
+   "id": "fd1_e4m7",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M7",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 4,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door",
+    "key",
+    "locked_door"
+   ],
+   "notes": "sectors=983 doors=32 locked=5 format=doom | static_rule_v1: lock_colours=blue,red,yellow locked_sectors=5 doors=32 static_monsters=448 sectors=983",
+   "tier_inputs": {
+    "sectors": 983,
+    "doors": 32,
+    "locked_sectors": 5,
+    "lock_colours": [
+     "blue",
+     "red",
+     "yellow"
+    ],
+    "static_monsters": 448,
+    "static_keys": 3
+   }
+  },
+  {
+   "id": "fd1_e4m8",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M8",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 2,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door"
+   ],
+   "notes": "sectors=348 doors=27 locked=0 format=doom | static_rule_v1: lock_colours=- locked_sectors=0 doors=27 static_monsters=111 sectors=348",
+   "tier_inputs": {
+    "sectors": 348,
+    "doors": 27,
+    "locked_sectors": 0,
+    "lock_colours": [],
+    "static_monsters": 111,
+    "static_keys": 0
+   }
+  },
+  {
+   "id": "fd1_e4m9",
+   "wad": "@vizdoom/freedoom1.wad",
+   "map": "E4M9",
+   "wad_sha256": "7323bcc168c5a45ff10749b339960e98314740a734c30d4b9f3337001f9e703d",
+   "source_group": "freedoom1:E4",
+   "source": "freedoom1.wad bundled with vizdoom, loaded over the freedoom2 IWAD",
+   "license": "BSD-3-Clause (Freedoom; bundled with vizdoom)",
+   "tier": 4,
+   "tier_basis": "static_rule_v1",
+   "episode_ticks": 4200,
+   "role": "test",
+   "tags": [
+    "freedoom1",
+    "exit",
+    "door",
+    "key",
+    "locked_door"
+   ],
+   "notes": "sectors=651 doors=25 locked=6 format=doom | static_rule_v1: lock_colours=blue,red,yellow locked_sectors=6 doors=25 static_monsters=359 sectors=651",
+   "tier_inputs": {
+    "sectors": 651,
+    "doors": 25,
+    "locked_sectors": 6,
+    "lock_colours": [
+     "blue",
+     "red",
+     "yellow"
+    ],
+    "static_monsters": 359,
+    "static_keys": 3
+   }
+  }
+ ]
+}

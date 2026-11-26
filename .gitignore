@@ -151,6 +151,10 @@ activemq-data/
 .venv
 venv/
 ENV/
+# macOS git has core.ignorecase=true, so `ENV/` above also matches the official wrapper
+# package `env/` and `tests/env/`. Keep both tracked.
+!/env/
+!/tests/env/
 env.bak/
 venv.bak/
 
@@ -222,3 +226,8 @@ _vizdoom.ini
 
 # Local validator / scorer artifacts
 *.lmp
+
+# Training/eval run outputs (scratch)
+runs/
+checkpoints/
+logs/

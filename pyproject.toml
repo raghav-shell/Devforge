@@ -12,7 +12,15 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=8"]
+dev = [
+    "pytest>=8",
+    "tensorboard==2.21.0",
+    "torch==2.15.0",
+]
 
 [tool.uv.sources]
 doom-env = { path = "env", editable = true }
+
+[tool.pytest.ini_options]
+# `doom_agent` is imported top-level, exactly as the scorer does (submission/ on sys.path).
+pythonpath = ["submission", "."]
