@@ -3,7 +3,7 @@
   "default_inference": "sample",
   "format_version": "export-1",
   "git_commit": "269d0313e9e0114f53dd29eb1f6cadf4cf55304d",
-  "global_step": 6144,
+  "global_step": 6553600,
   "inference_temperature": 1.0,
   "obs_config": {
     "enable_depth_band": false,
@@ -31,5 +31,5 @@
     "use_depth_band": false,
     "use_egomap": false
   },
-  "source_ckpt_sha256": "8d87ade6b65269f07f13050283ce88f9d14c002dc313c8f17c95bfc5ede1c2ad"
+  "source_ckpt_sha256": "30bf5917c21d855d3883bc5e0b23552ce0290e0240fec667abccd59228d6eac3"
 }
