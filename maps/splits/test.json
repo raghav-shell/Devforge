@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "split": "test",
+  "description": "Held-out test maps. Access logged in reports/eval/test_access_log.jsonl. Empty in phase 1.",
+  "created_utc": "2026-11-26",
+  "owner": "evaluation-and-generalization-researcher",
+  "seeds": [
+    20000,
+    20001,
+    20002,
+    20003,
+    20004,
+    20005,
+    20006,
+    20007,
+    20008,
+    20009
+  ],
+  "maps": []
+}

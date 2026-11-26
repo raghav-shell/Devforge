@@ -1,0 +1,5 @@
+# Optional: extra pip packages NOT already in the official base image, with pinned versions.
+# Installed before evaluation (with network); evaluation itself runs without network.
+# Example:
+# gymnasium-robotics==1.4.0
+# Only `package==version` lines: no -r/-e/--index-url/--find-links, URLs or paths.

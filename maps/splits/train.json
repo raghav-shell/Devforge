@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "split": "train",
+  "description": "Training maps (empty until environment-engineer adds licensed WADs under maps/<source>/).",
+  "created_utc": "2026-11-26",
+  "owner": "evaluation-and-generalization-researcher",
+  "seeds": [
+    100,
+    101,
+    102
+  ],
+  "maps": []
+}

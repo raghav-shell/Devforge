@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "split": "val",
+  "description": "Validation maps for model selection (empty in phase 1).",
+  "created_utc": "2026-11-26",
+  "owner": "evaluation-and-generalization-researcher",
+  "seeds": [
+    10000,
+    10001,
+    10002,
+    10003,
+    10004
+  ],
+  "maps": []
+}
