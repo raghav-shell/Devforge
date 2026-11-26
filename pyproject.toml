@@ -1,0 +1,18 @@
+[project]
+name = "devforge-doom-template"
+version = "0.1.0"
+description = "Starter template for DevForge 'Can It Play DOOM?' (Yugaantar 2026)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "doom-env",
+    "vizdoom==1.3.3",
+    "gymnasium>=1.0",
+    "numpy>=2.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.uv.sources]
+doom-env = { path = "env", editable = true }
