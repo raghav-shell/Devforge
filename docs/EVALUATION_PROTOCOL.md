@@ -1,6 +1,6 @@
 # Evaluation Protocol
 
-Owner: evaluation-and-generalization-researcher. Status: **phase 1 (design + skeleton)**, 2026-11-26.
+Owner: evaluation-and-generalization-researcher. Status: **phase 2 (real splits; test INCOMPLETE)**, 2026-11-26.
 Primary metric: the **held-out-map proxy score** (§3) on the `test` split, reported with a 95 % CI.
 Model selection uses only the `val` split.
 
@@ -9,8 +9,8 @@ Ground truth this protocol follows: `docs/EVALUATION.md` (tiers, non-binary scor
 `env/doom_env/wrapper.py` (`privileged_state()`, `sector_polygons()`). Where this document
 approximates something hidden (the official weights), it says so.
 
-Code: `training/eval/` (`harness.py`, `splits.py`, `inventory.py`, `metrics/core.py`, `proxy_score.py`,
-`stats.py`). Manifests: `maps/splits/{smoke,train,val,test}.json`. Test access log:
+Code: `training/eval/` (`harness.py`, `splits.py`, `build_splits.py`, `tiering.py`, `inventory.py`,
+`metrics/__init__.py`, `metrics/core.py`, `proxy_score.py`, `stats.py`; checks in `training/eval/tests/`). Manifests: `maps/splits/{smoke,train,val,test}.json`. Test access log:
 `reports/eval/test_access_log.jsonl`. Run outputs: `runs/evaluation-and-generalization-researcher/<run-id>/`.
 
 ---
@@ -35,18 +35,24 @@ Group rules:
 | ViZDoom bundled scenarios | `vizdoom:<scenario>` | One map each |
 | Template maps (`maps/two_rooms.wad`, `tests/fixtures/*.wad`) | `template_*` | Smoke only (§1.5) |
 
-`DECISION (needs main-session approval)`: how to sub-group `freedoom2.wad`, since it is a single WAD.
-The proposal is blocks of 8 maps, with at least one block held out entirely for `val`, and `test` drawn from
-source families that never appear in training. Reasoning: the hidden maps are **unseen** and use the
-freedoom2 IWAD textures. If train, val and test are all Freedoom, a high score could reflect Freedoom-specific
-style rather than generalisation.
+Freedoom sub-grouping as implemented by the registry (`training/envs/maps.py`): freedoom2 in blocks of 8 maps
+(`freedoom2:MAP01-08` … `MAP25-32`), freedoom1 per episode (`freedoom1:E1` … `E4`). Reasoning for keeping the
+test family separate: the hidden maps are **unseen** and use the freedoom2 IWAD textures. If train, val and test
+are all Freedoom, a high score could reflect Freedoom-specific style rather than generalisation.
 
 Hard rules (enforced by `training/eval/splits.py`, which exits non-zero on violation):
-- A `source_group` or a `(wad_sha256, map)` pair may appear in at most one of `train`, `val` and `test`.
+- A `source_group`, a `(wad_sha256, map)` pair or a **map geometry** may appear in at most one of `train`, `val`
+  and `test`. Geometry = sha256 of `TEXTMAP` (UDMF) or `VERTEXES` (binary maps), which catches retextured or
+  re-thinged copies under a new hash or group. MEASURED: over all 155 registry maps the only geometry duplicates
+  are ViZDoom scenarios (basic = basic_audio = basic_notifications; cig MAP02 = cig_with_unknown MAP02;
+  rocket_basic = simpler_basic), all in train. No freedoom1/freedoom2 map shares geometry with another.
 - `smoke` maps may also appear in `train`, never in `val` or `test`.
-- Every manifest entry's `wad_sha256` must match the file on disk.
-- `test` must contain at least one source family (generator or author) with **no** group in `train`
-  (checked manually at split-freeze time and recorded in `test.json` `description`).
+- Every manifest entry's `wad_sha256` must match the file on disk, **including** `@vizdoom/` bundled WADs.
+- `tier_basis` ∈ {mechanic, manual, generator, static_rule_v1, none}; `role` equals the split.
+- `test` must contain at least one source family with **no** group in `train`. Family = the project or generator
+  style (`freedoom` for freedoom1 and freedoom2, `udmfgen-a` / `udmfgen-b`, `vizdoom`, `template`;
+  `splits.family`). This is an **error**, downgraded to a printed WARNING only while `test.json` carries
+  `"incomplete": true`.
 
 Splits are frozen once `val`/`test` are populated. Adding maps to `test` later starts a new test
 version (`test_v2.json`), and scores from different test versions are never compared.
@@ -63,10 +69,40 @@ in order to exit:
 - an arena or a single room whose challenge is the monsters: tier 1.
 
 `tier_basis` records how the tier was assigned:
-- `mechanic`: from the map contents, for tiny or synthetic maps;
-- `manual`: judged by someone playing it;
-- `generator`: from the generator config;
+- `mechanic`: from the map contents, for tiny or synthetic maps (smoke fixtures);
+- `manual`: judged by someone playing it (not used; never from replays of val/test maps);
+- `generator`: from the generator (`training/envs/mapgen/generator.py:317-319`);
+- `static_rule_v1`: the static rule below, for every map whose registry tier is null (Freedoom, ViZDoom);
 - `none`: no tier.
+
+**Rule `static_rule_v1`** (`training/eval/tiering.py`). Inputs are static WAD data only: `doom_env.mapinfo`
+door/lock sectors and `training.envs.inventory.static_things` (skill 3, single player). No engine run, no
+outcomes, no replays. The inputs are stored per entry in `tier_inputs` and in `notes`.
+
+| Inputs | Definition |
+| --- | --- |
+| L | distinct key colours that lock a door. Lock codes are normalised: 1/4/129 red, 2/5/130 blue, 3/6/131 yellow, 100 = one colour ("any"), 101 = all three |
+| M | static monsters; D = ordinary doors; S = sectors |
+
+| Tier | Condition (first match) |
+| --- | --- |
+| 4 | L ≥ 2, or L ≥ 1 and M ≥ 6 (multiple locks, or a lock plus a monster gauntlet) |
+| 3 | L = 1 |
+| 2 | L = 0 and (D ≥ 1, or M = 0 and S ≥ 2) |
+| 1 | L = 0, D = 0, M ≥ 1 |
+| null | otherwise (one sector, nothing to do) |
+
+The thresholds are the generator's own (stage tiers in `config.py`, and the tier-4 rule "≥ 2 locks, or a full
+stage with ≥ 6 monsters"), so a single rule covers generated and authored maps. MEASURED: the rule reproduces the
+generator tier on **70/70** generated maps (`uv run --no-sync python -m training.eval.tiering`).
+Monster density was considered for tier 1 vs 2 and **rejected**: EVALUATION.md lists doors as a tier-2 skill, and
+the density of generator combat-a maps (MEASURED 0.88–4.0 monsters per 100 cells) overlaps door-heavy Freedoom
+levels without locks (0.16–6.1), so a density threshold would label multi-room door maps as combat maps.
+Limits: the rule cannot tell whether a lock is on the exit path (authored maps can have optional locks), and
+ACS-spawned monsters (most ViZDoom scenarios) are invisible to it, so `basic`, `defend_the_*`, `take_cover` and
+friends come out `null`. Result: Freedoom levels are almost all tier 4 (they have 2–3 key colours and dozens of
+monsters). The maps with no locks are tier 2, and no Freedoom map is tier 1 or 3. Changing the rule is a new
+`static_rule_v2` label; it is never adjusted to move particular val/test maps.
 
 `tier: null` means the map is not representative of any tier (pure environment sanity).
 
@@ -84,6 +120,14 @@ unpaired variance left, 4 maps per tier gives a per-tier CI half-width of about 
 The full 16–24 map suite gives about 5–7 points. In other words, per-tier claims are coarse, and
 **decisions are made on the whole-suite paired delta**. Revisit the SD once real val numbers exist.
 
+Episode ticks: manifests keep the registry value. Generated maps use their stage cap (2,100 for locomotion,
+doors and combat; 4,200 for keys and full), ViZDoom scenarios 2,100, and **Freedoom levels 4,200 whatever their
+tier**. Freedoom levels are full-size (441–7,687 cells), so the 2,100-tick rule for T1–T2 above counts as "the map
+defines otherwise". This is recorded per entry in `episode_ticks`.
+
+`build_splits` prints the per-tier counts against these minimums (`SHORTFALL` lines); shortfalls are reported, never
+hidden by moving maps between splits (§1.5).
+
 ### 1.4 Manifest schema (`maps/splits/<split>.json`, `schema_version` "1.0")
 
 ```json
@@ -94,6 +138,9 @@ The full 16–24 map suite gives about 5–7 points. In other words, per-tier cl
   "created_utc": "YYYY-MM-DD",
   "owner": "evaluation-and-generalization-researcher",
   "seeds": [0, 1, 2],
+  "status": "complete | INCOMPLETE", "incomplete": false,
+  "incomplete_reason": "only when incomplete",
+  "generated_by": "uv run --no-sync python -m training.eval.build_splits --write",
   "maps": [{
     "id": "unique across all manifests",
     "wad": "repo-relative path, or @vizdoom/<file> for WADs bundled in the vizdoom package",
@@ -102,7 +149,8 @@ The full 16–24 map suite gives about 5–7 points. In other words, per-tier cl
     "source_group": "see 1.1",
     "source": "where it came from (URL / generator + version + seed)",
     "license": "license id or 'template'",
-    "tier": 1, "tier_basis": "mechanic | manual | generator | none",
+    "tier": 1, "tier_basis": "mechanic | manual | generator | static_rule_v1 | none",
+    "tier_inputs": {"sectors": 0, "doors": 0, "locked_sectors": 0, "lock_colours": [], "static_monsters": 0, "static_keys": 0},
     "episode_ticks": 2100,
     "role": "same as split",
     "tags": ["door", "key", "locked_door", "exit", "monster", "negative_control"],
@@ -111,19 +159,77 @@ The full 16–24 map suite gives about 5–7 points. In other words, per-tier cl
 }
 ```
 
-`training/eval/splits.py` validates required keys, tier ∈ {1, 2, 3, 4, null}, `1 ≤ episode_ticks ≤ 4200`, unique
-ids, sha256 and leakage (§1.1).
+`tier_inputs` is present only for `static_rule_v1` entries. `status` / `incomplete` / `incomplete_reason` /
+`generated_by` are manifest-level, and the smoke manifest predates them. `training/eval/splits.py` validates:
+- required keys, `role` = split, tier ∈ {1, 2, 3, 4, null}, `tier_basis`, and `1 ≤ episode_ticks ≤ 4200`;
+- unique ids and sha256, including `@vizdoom/` WADs;
+- leakage by group, hash and geometry, and the unseen-family rule (§1.1).
 
-### 1.5 Maps that exist locally (phase 1)
+### 1.5 Split contents (frozen 2026-11-26, test INCOMPLETE)
 
-`train.json`, `val.json` and `test.json` are **empty**. There are no licensed training maps yet, and the
-environment-engineer owns `maps/<source>/`. `smoke.json` lists all 14 local maps. They are **usable for smoke
-tests only**: the fixtures are one-row corridors, or two rows for the door/zombie pair, with 2–14 64-unit cells and
-1–4 sectors. `two_rooms` has 60 cells and 4 sectors. They exercise every metric code path, but say nothing about generalisation.
+Built from the registry, never hand-typed: `uv run --no-sync python -m training.eval.build_splits --write`
+(`--check` fails if the committed manifests drift from registry output). Entries come from
+`training.envs.maps.all_entries()` through `manifest_entries(entries, role)`. Splits are assigned per
+`source_group` by the glob table `build_splits.GROUP_SPLIT`, where the first match wins and an unmatched group is
+an error. Manifest order is registry order. The registry guard `check_trainable` is asserted both ways: it accepts
+every train entry and refuses every val and test entry. As a result, `check_trainable(all_entries())` now
+**raises by design**. Trainers must use the train manifest or `MapSampler`.
+
+| Split | Maps | Groups (tiers) | Seeds |
+| --- | --- | --- | --- |
+| train | 109 | generator family a: combat-a (10 × T1), locomotion-a (10 × T2), doors-a (10 × T2), keys-a (4 × T3, 6 × T4), full-a (10 × T4); freedoom2 MAP01-08 (1 × T2, 7 × T4), MAP09-16 (8 × T4), MAP17-24 (8 × T4); freedoom1 E1 (2 × T2, 7 × T4), E2 (2 × T2, 7 × T4); 17 ViZDoom scenarios, one group each (deadly_corridor T1; cig, cig_with_unknown, deathmatch, multi_deathmatch, my_way_home, predict_position T2; 10 null) | 100–102 |
+| val | 37 | generator family b, seeds 1000–1003: combat-b (4 × T1), locomotion-b (4 × T2), doors-b (4 × T2), keys-b (3 × T3, 1 × T4), full-b (4 × T4); freedoom2 MAP25-32 (MAP30 T2, 7 × T4); freedoom1 E3 (E3M1, E3M8 T2; 7 × T4) | 10000–10004 |
+| test | 9 | freedoom1 E4 (E4M8 T2, 8 × T4). **INCOMPLETE** | 20000–20009 |
+
+Per-tier counts (maps / groups) against §1.3:
+
+| Split | T1 | T2 | T3 | T4 | null |
+| --- | --- | --- | --- | --- | --- |
+| train | 11 / 2 (short: 16 / 3) | 31 / 11 | 4 / 1 (short: 16 / 3) | 53 / 7 | 10 / 10 |
+| val | 4 / 1 (short: 2 groups) | 11 / 4 | 3 / 1 (short: 4 / 2) | 19 / 4 | 0 |
+| test | 0 (short) | 1 / 1 (short) | 0 (short) | 8 / 1 (short: 2 groups) | 0 |
+
+The train shortfalls are cheap to fix, because the generator is unbounded: the generated samples are only a sample,
+and training generates more family-a maps. The val shortfalls are T1 (only generator combat-b) and T3 (only 3
+keys-b maps with one lock). Both need more **family-b** maps from the environment-engineer: more keys-b seeds with
+one lock, and a second tier-1 source. Until then, val per-tier numbers for T1 and T3 are single-group and are not
+used for decisions.
+
+**What "frozen" means for val.** Adding val maps (for example the requested keys-b seeds) creates a new val version.
+It changes the suite and the manifest order, so the random baseline's per-map results change too (§5). Val numbers
+from different versions are never compared. The checkpoints being compared and the random floor are rerun on the new
+version. Val is never reshuffled with train.
+
+**Stratified reporting.** Freedoom maps are 17 of the 37 val maps and are mostly tier 4 (weight 3), so they carry more
+than half of the tier-weighted val score. Val results are therefore reported overall **and** per stratum (generated
+family b vs Freedoom). The ViZDoom drills have no val counterpart, so the train→val gap (§4.7) excludes them.
+
+**The test gap.** `test.json` carries `"status": "INCOMPLETE"`, `"incomplete": true` and an `incomplete_reason`.
+- It holds freedoom1 E4 only. That is a held-out **episode**, but not an unseen **family**: it comes from the same
+  Freedoom project (authors, textures) as freedoom1 E1–E2 and freedoom2 in train. It therefore violates the §1.1
+  unseen-family rule (a WARNING while flagged, an ERROR once the flag is removed).
+- It has no tier 1 or tier 3 maps.
+- A third-party family needs an `oss-scout` licence check and main-session approval before download.
+- Until then, the test split must not be called "unseen-map" performance. The harness stamps
+  `manifest_status` and `manifest_incomplete` into `run.json` and into the access-log line of any test run.
+- Completing the manifest before the first logged test run is still test v1. After a logged test run, any change
+  is `test_v2`.
+
+Leak cross-checks run on every `splits` validation: source group, (sha256, map) and geometry. None fire on the
+committed manifests. The ViZDoom geometry duplicates are all in train. Request to the environment-engineer: give
+basic/basic_audio/basic_notifications, cig/cig_with_unknown and rocket_basic/simpler_basic one `source_group` each,
+so the grouping states what the geometry check enforces.
+
+#### Smoke split (`smoke.json`, unchanged since phase 1)
+
+`smoke.json` lists the 14 template maps. They are **usable for smoke tests only**: the fixtures are one-row
+corridors, or two rows for the door/zombie pair, with 2–14 64-unit cells and 1–4 sectors. `two_rooms` has 60 cells
+and 4 sectors. They exercise every metric code path, but say nothing about generalisation.
 
 Fixture-to-layout mapping: MEASURED by hashing every grid string in `tests/test_env.py` and `tests/test_remote.py`
 with `tests/fixtures.py:fixture_wad`. All 13 matched. Outcomes are from the random baseline
-(`submission/agent.py`), 3 seeds, run `20261126T114755Z-smoke-61983206-default` (proxy_v1):
+(`submission/agent.py`), 3 seeds, run `20261126T114755Z-smoke-61983206-default` (proxy_v1), and were reproduced
+episode for episode by `20261126T160850Z-smoke-3081520d-default` after the D13 inventory swap:
 
 | id | file | grid / content | tier | Random-agent outcomes (seeds 0, 1, 2) | Smoke use |
 | --- | --- | --- | --- | --- | --- |
@@ -165,9 +271,13 @@ Also used: `env.sector_polygons()` (`wrapper.py:229`), whose docstring says the 
 coverage. We use it for map area and reachable-cell denominators. `tic` is **not** used for terminal
 time (see the MEASURED note in §4.1). Unused: `z`, `items`.
 
-Not in `privileged_state()` but needed as denominators: monsters at reset, and keys at reset.
-`training/eval/inventory.py` currently reads them from `env._game.get_state().objects` with
-`doom_env.sensors.classify`. That is an adapter on wrapper internals until the env contract exists (§9.1).
+Not in `privileged_state()` but needed as denominators: monsters at reset, and keys at reset. Since D13 they come
+from the single implementation `training.envs.inventory.map_inventory(env)` (environment-engineer; its one
+engine-object read is isolated there in `_live_objects`). `training/eval/inventory.py` is now a shim that wraps
+that dict in the `MapInventory` dataclass of the metric contract and adds `sector_at` from the public
+`env.sector_polygons()`. The mapping is `monsters_present ← monsters` (live at reset, **not** `static_monsters`;
+they differ on fd2 MAP16 and MAP30 and on every ACS-spawned scenario) and `keys_present ← keys`. MEASURED: the smoke
+run after the swap reproduces all 42 episodes of the reference run, every non-timing field identical.
 Ammo comes from the observation `vitals[4:8]`, which the harness receives anyway.
 
 ---
@@ -331,6 +441,14 @@ means **held-in training maps evaluated with the vanilla engine and eval seeds**
   - `summary.json`.
   No episode is ever dropped or filtered. Agent failures count in every aggregate.
 
+- **Metrics.** Each episode runs `training.eval.metrics.run_all`: every `MetricFn` in `ALL_METRICS` (§9.3), core
+  first, then the `expl.` and `combat.` plug-ins once their modules exist. The proxy is computed from the
+  `core.` keys only.
+- **Subsets.** `--only <ids>` and `--groups <source_group globs>` select maps, keeping manifest order. `run.json`
+  records `subset: true`, plus `manifest_status` and `manifest_incomplete`. A subset run is never reported as a split score.
+- **Summary.** `summary.json` adds `means` (episode means of the main metrics) and `per_tier` (maps, episodes, proxy mean
+  with a per-tier cluster-bootstrap CI, completion, survival, coverage), next to the tier-weighted `proxy_suite`.
+
 **Failure taxonomy** (`core.classify_failure`, evaluated in order):
 1. `success` (or `success_after_agent_failure`);
 2. `agent_failure:<kind>`;
@@ -372,7 +490,9 @@ locked doors seen in rays without the key.
 
 - The harness refuses `--split test` without `--test-purpose "<why>"`. It appends a JSON line to
   `reports/eval/test_access_log.jsonl` **before** playing: UTC time, run id, git commit, agent and weights
-  hashes, seeds, mode, maps, purpose and argv.
+  hashes, seeds, mode, maps, purpose, argv and `manifest_status` / `manifest_incomplete`. While `test.json` is
+  INCOMPLETE (§1.5), a test result is labelled "held-out Freedoom episode", never "unseen-map".
+- Test log status 2026-11-26: **no test run has been made** (`reports/eval/test_access_log.jsonl` is empty).
 - Budget: **at most 1 test run per milestone**, decided by the main session. Expected total for the event is
   ≤ 5. Each logged run is reported in full, whatever the result.
 - No decision (hyperparameters, reward weights, inference mode, checkpoint choice, curriculum) may cite a
@@ -407,11 +527,12 @@ locked doors seen in rays without the key.
 ## 9. Proposed contracts and needs from other owners
 
 ### 9.1 environment-engineer
-`PROPOSED CONTRACT: training/envs/inventory.py: map_inventory(env) -> dict` called right after
-`env.reset()`:
-`{"monsters": int, "keys": int, "door_sectors": {sector: lock}, "sector_area": float[S], "cells_total": int}`.
-This replaces the private-attribute adapter in `training/eval/inventory.py`. Also requested:
-- a map registry that emits manifest entries in the §1.4 schema, and refuses test WADs;
+`training/envs/inventory.py: map_inventory(env) -> dict` is **landed and adopted** (D13). The eval side imports it
+(§2). The registry (`training/envs/maps.py`: `manifest_entries`, `check_trainable`, `MapSampler`) is **landed**,
+and `maps/splits` is built from it (§1.5). Still requested:
+- more family-b maps for val: keys-b seeds with one lock (T3 has 3 maps, needs ≥ 4) and a second tier-1 source group
+  (§1.5);
+- merge the geometry-duplicate ViZDoom scenarios into shared source groups (§1.5);
 - a vanilla-mode flag on the training env factory, so eval can confirm "no mods";
 - the training env logging both the shaped return and the default env return per episode.
 
@@ -426,8 +547,11 @@ Environment variables are the only channel that crosses the `doom_env.remote` bo
 anything except action selection.
 
 ### 9.3 Metric plug-in interface (exploration-engineer, combat-and-survival-engineer)
-`PROPOSED CONTRACT:` `MetricFn = Callable[[EpisodeTrace, MapInventory], dict[str, float|int|str]]`
-(`training/eval/metrics/core.py`):
+`MetricFn = Callable[[EpisodeTrace, MapInventory], dict[str, float|int|str]]`
+(`training/eval/metrics/core.py`). **Registry implemented** (MODULE_CONTRACTS §7): each module exports
+`METRICS: list[MetricFn]`, and `training/eval/metrics/__init__.py` collects them into `ALL_METRICS` (core first). A
+plug-in module that does not exist yet is skipped; any other import error propagates. `run_all` raises on a key
+without the module's prefix, on a duplicate key and on a non-scalar value. Rules:
 - it is a pure function and never touches the env;
 - its keys are prefixed `expl.` or `combat.`;
 - values are JSON scalars.
@@ -450,10 +574,14 @@ Training should log the shaped return per episode, and val evals should be calle
 ## 10. Reproduce
 
 ```bash
-uv run --no-sync python -m training.eval.splits                                   # validate manifests
+uv run --no-sync python -m training.eval.splits                                   # validate manifests + leak checks
+uv run --no-sync python -m training.eval.build_splits --check                     # manifests == registry output
+uv run --no-sync python -m training.eval.tiering                                  # static_rule_v1 vs generator (70/70)
+uv run --no-sync python -m pytest training/eval/tests -q --basetemp=/tmp/ptq_eval # eval-owned checks
 uv run --no-sync python -m training.eval.harness --split smoke                    # all smoke maps, seeds 0 1 2
 uv run --no-sync python -m training.eval.harness --split smoke --only two_rooms --seeds 0
-uv run --no-sync python -m training.eval.harness --split val --mode greedy        # once val is populated
+uv run --no-sync python -m training.eval.harness --split val --groups 'udmfgen:*-b-v*' --seeds 10000   # family-b floor
+uv run --no-sync python -m training.eval.harness --split val --mode greedy        # full val, 5 seeds
 uv run --no-sync python -m training.eval.harness --split test --test-purpose "M3 final"   # logged
 ```
 
@@ -463,6 +591,26 @@ Phase-1 reference run: `20261126T114755Z-smoke-61983206-default` (proxy_v1). Ran
 - completion 0.095, survival 0.571;
 - env return −0.33;
 - 0 agent failures.
+
+Post-D13 runs (2026-11-26, git `269d031`, `submission_dirty` true because other agents added files under
+`submission/doom_agent/`; `submission/agent.py` is the unchanged random baseline; agent code hash `3081520d…`,
+weights hash `efc09868…`, doom_env hash `d1829786…`, vizdoom 1.3.3, proxy_v1, mode `default`):
+- `20261126T160850Z-smoke-3081520d-default`: smoke, seeds 0–2, 42 episodes, with `.lmp` (42 files). It is
+  **identical, episode for episode, to the phase-1 reference** (all non-timing fields): proxy suite 16.93 (CI 6.04–30.32),
+  completion 0.095, survival 0.571, env return −0.326, 0 agent failures.
+- `20261126T160929Z-val-3081520d-default`: **random-agent floor on the val family-b subset** (20 maps × seed 10000,
+  20 episodes; `subset: true`, so this is not the val suite score). Proxy suite −2.20 (95 % CI −5.09 to 0.67);
+  completion 0.00; survival 0.65; env return −0.335; mean cell coverage 0.115; 0 agent failures. Failure classes:
+  death_early 5, death_late 2, timeout_exploring 8, timeout_missing_key 5. Per tier (proxy mean, CI):
+  - T1: 4 maps, −8.92 (−9.54 to −8.29), survival 0.00;
+  - T2: 8 maps, 2.10 (1.39 to 3.14), survival 1.00;
+  - T3: 3 maps, 1.10 (0.52 to 1.92), survival 1.00;
+  - T4: 5 maps, −5.18 (−10.69 to 0.34), survival 0.40.
+
+  No key was picked up, no locked door was opened, and 1 of 35 ordinary doors was opened (0 of 12 keys, 0 of 12 locked doors).
+  The Freedoom part of val has not been run yet.
+- `harnesscheck-freedoom-train`: a **harness check, not a score**. It runs train maps fd2_map01 and fd1_e1m1 at seed 100
+  (binary Freedoom format, 1,050 steps each). Both ran to timeout with no error, p99 act latency 1.0 and 7.2 ms, 0 agent failures.
 
 Every other run on disk is labelled `proxy_v0` (pre-freeze) and is **not comparable**:
 - `20261126T113644Z…` (two_rooms ×2) and `20261126T113655Z…` (smoke ×42): area-only exploration;
@@ -478,4 +626,8 @@ Every other run on disk is labelled `proxy_v0` (pre-freeze) and is **not compara
   The harness gives stand-still credit after a reset failure, and aborts the pass on an init failure. TODO: score those
   maps as 0 and record them.
 - The tier-weighted suite score includes untiered smoke maps at weight 1. It is only meaningful once val and test exist.
-- The dashboard (TensorBoard or static HTML in `reports/eval/`) is not built yet. It is phase 2, once there are 2+ checkpoints.
+- The dashboard (TensorBoard or static HTML in `reports/eval/`) is not built yet. It waits for 2+ checkpoints.
+- **Test is INCOMPLETE** (§1.5): one Freedoom episode, no unseen family, no T1/T3 maps.
+- The val T1 and T3 tiers are single-group, and T3 has 3 maps (§1.5).
+- `static_rule_v1` cannot see whether a lock is on the exit path, or see ACS-spawned monsters (§1.2).
+- Eval-owned tests live in `training/eval/tests/`, because `tests/eval/` is unassigned in OWNERSHIP.md.

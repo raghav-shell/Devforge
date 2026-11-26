@@ -1,0 +1,35 @@
+{
+  "action_space_version": "1.0.0",
+  "default_inference": "sample",
+  "format_version": "export-1",
+  "git_commit": "269d0313e9e0114f53dd29eb1f6cadf4cf55304d",
+  "global_step": 6144,
+  "inference_temperature": 1.0,
+  "obs_config": {
+    "enable_depth_band": false,
+    "enable_egomap": false,
+    "enable_icp": false,
+    "time_feature": true,
+    "time_scale_steps": 1050.0
+  },
+  "obs_pipeline_hash": "68d05a72ca4f0bd42344cd132f82f9563d7601864fd50e618aba4f89afd48d08",
+  "obs_schema_version": "1.0.0",
+  "policy_config": {
+    "action_head": "factored",
+    "action_space_version": "1.0.0",
+    "core": "gru",
+    "entity_encoder": "deepsets",
+    "extra_value_heads": [],
+    "fusion": "concat",
+    "head_bias_init": {
+      "next_weapon": -2.0,
+      "use": -2.0
+    },
+    "hidden_size": 256,
+    "obs_schema_version": "1.0.0",
+    "ray_encoder": "circconv",
+    "use_depth_band": false,
+    "use_egomap": false
+  },
+  "source_ckpt_sha256": "8d87ade6b65269f07f13050283ce88f9d14c002dc313c8f17c95bfc5ede1c2ad"
+}

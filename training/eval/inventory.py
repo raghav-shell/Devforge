@@ -1,9 +1,13 @@
-"""Static per-map facts the proxy scorer needs as denominators (eval-side only).
+"""Static per-map facts the proxy scorer needs as denominators (eval-side only, never imported by submission/).
 
-`privileged_state()` has no totals (monsters, keys, door count, map area), so this adapter reads them
-once at reset. It touches wrapper internals (`env._game`, `env._sensors`) and is a THIN ADAPTER pending
-the environment-engineer contract `map_inventory(env) -> MapInventory` (docs/EVALUATION_PROTOCOL.md §9).
-Never imported by submission/.
+D13 (docs/DECISIONS.md): the single `map_inventory` implementation is `training.envs.inventory.map_inventory`.
+This module is a compatibility shim: it wraps that dict in the `MapInventory` dataclass the metric contract uses
+(docs/MODULE_CONTRACTS.md §7, `MetricFn(EpisodeTrace, MapInventory)`), and adds the sector point lookup
+(`sector_at`) that core metrics need, built from the public `env.sector_polygons()`. It reads no wrapper internals.
+
+Field mapping (unchanged semantics vs the pre-D13 adapter, so proxy_v1 numbers stay comparable):
+    keys_present     <- inv["keys"]      (live engine objects at reset)
+    monsters_present <- inv["monsters"]  (live, skill 3, after ACS OPEN scripts; NOT static_monsters)
 """
 
 from __future__ import annotations
@@ -12,8 +16,8 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-CELL = 64.0  # exploration cell size, map units (docs/EVALUATION_PROTOCOL.md §4.3)
-AREA_RES = 16.0  # raster resolution for sector areas
+from training.envs.inventory import AREA_RES, CELL  # noqa: F401  re-exported (metrics.core imports CELL)
+from training.envs.inventory import map_inventory as env_map_inventory
 
 
 def _point_in_segments(px: np.ndarray, py: np.ndarray, seg: np.ndarray) -> np.ndarray:
@@ -32,12 +36,14 @@ def _point_in_segments(px: np.ndarray, py: np.ndarray, seg: np.ndarray) -> np.nd
 class MapInventory:
     num_sectors: int
     door_sectors: dict[int, int]  # sector id -> lock (0 = ordinary door, >0 = locked)
-    keys_present: int  # key items in the level at reset
-    monsters_present: int  # monsters in the level at reset (skill 3 spawn set)
-    sector_area: np.ndarray  # (S,) approx area per sector (map units^2)
-    cells_total: int  # 64x64 cells whose centre lies inside any sector
+    keys_present: int  # key items in the level at reset (live)
+    monsters_present: int  # monsters in the level at reset (live, skill 3)
+    sector_area: np.ndarray  # (S,) area per sector (map units^2, 16-unit raster)
+    cells_total: int  # 64x64 cells with a raster sample inside any sector
     seg_by_sector: dict[int, np.ndarray] = field(repr=False, default_factory=dict)
     bbox: dict[int, tuple[float, float, float, float]] = field(repr=False, default_factory=dict)
+    static_monsters: int = 0  # WAD THINGS, skill 3 single player (cross-check only)
+    static_keys: int = 0
 
     @property
     def doors_total(self) -> int:
@@ -59,41 +65,17 @@ class MapInventory:
         return best
 
 
-def map_inventory(env) -> MapInventory:
-    """Call right after env.reset(). Reads engine objects once (eval-side only)."""
-    from doom_env.sensors import classify
+def from_dict(inv: dict, polygons) -> MapInventory:
+    seg_by_sector = {int(sid): seg for sid, seg in polygons if len(seg)}
+    bbox = {sid: (float(seg[:, [0, 2]].min()), float(seg[:, [1, 3]].min()), float(seg[:, [0, 2]].max()),
+                  float(seg[:, [1, 3]].max())) for sid, seg in seg_by_sector.items()}
+    return MapInventory(
+        num_sectors=int(inv["num_sectors"]), door_sectors=dict(inv["door_sectors"]), keys_present=int(inv["keys"]),
+        monsters_present=int(inv["monsters"]), sector_area=np.asarray(inv["sector_area"], np.float64),
+        cells_total=int(inv["cells_total"]), seg_by_sector=seg_by_sector, bbox=bbox,
+        static_monsters=int(inv["static_monsters"]), static_keys=int(inv["static_keys"]))
 
-    st = env.privileged_state()
-    door_lock = st["door_lock"]
-    doors = {int(s): int(v) for s, v in enumerate(door_lock) if v >= 0}
-    state = env._game.get_state()  # ADAPTER: wrapper internal, see module docstring
-    monsters = keys = 0
-    for o in state.objects:
-        cat = getattr(o, "category", "")
-        t = classify(o.name, cat)
-        if cat == "Monster":
-            monsters += 1
-        elif t == "key":
-            keys += 1
-    polys = env.sector_polygons()
-    seg_by_sector = {sid: seg for sid, seg in polys if len(seg)}
-    bbox = {}
-    for sid, seg in seg_by_sector.items():
-        xs, ys = seg[:, [0, 2]], seg[:, [1, 3]]
-        bbox[sid] = (float(xs.min()), float(ys.min()), float(xs.max()), float(ys.max()))
-    n = len(door_lock)
-    area = np.zeros(n)
-    cells: set[tuple[int, int]] = set()
-    for sid, (x0, y0, x1, y1) in bbox.items():
-        gx = np.arange(x0 + AREA_RES / 2, x1, AREA_RES)
-        gy = np.arange(y0 + AREA_RES / 2, y1, AREA_RES)
-        if not len(gx) or not len(gy):
-            continue
-        X, Y = np.meshgrid(gx, gy)
-        m = _point_in_segments(X.ravel(), Y.ravel(), seg_by_sector[sid])
-        if sid < n:
-            area[sid] = m.sum() * AREA_RES**2
-        cx, cy = X.ravel()[m], Y.ravel()[m]
-        # a 64-cell counts if any 16-unit sample inside a sector falls in it
-        cells.update(zip(np.floor(cx / CELL).astype(int).tolist(), np.floor(cy / CELL).astype(int).tolist()))
-    return MapInventory(n, doors, keys, monsters, area, len(cells), seg_by_sector, bbox)
+
+def map_inventory(env) -> MapInventory:
+    """Call right after env.reset(). Delegates to training.envs.inventory.map_inventory (D13)."""
+    return from_dict(env_map_inventory(env), env.sector_polygons())

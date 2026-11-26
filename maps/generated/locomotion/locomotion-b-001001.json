@@ -1,0 +1,306 @@
+{
+ "attempt": 0,
+ "cell_size": 32,
+ "config": {
+  "ambush_prob": 0.2,
+  "ammo_items": [
+   0,
+   0
+  ],
+  "arena_scale": 1.0,
+  "armor_items": [
+   0,
+   0
+  ],
+  "corridor_height": [
+   96,
+   112,
+   128
+  ],
+  "corridor_width": [
+   2,
+   3,
+   3
+  ],
+  "door_close_prob": 0.5,
+  "door_prob": 0.0,
+  "episode_ticks": 2100,
+  "episode_ticks_range": [
+   2100,
+   4200
+  ],
+  "exit_switch_prob": 0.3,
+  "extra": {},
+  "family": "b",
+  "floor_choices": [
+   0,
+   0,
+   0,
+   8,
+   16,
+   24
+  ],
+  "health_items": [
+   0,
+   1
+  ],
+  "light": [
+   144,
+   224
+  ],
+  "loop_prob": 0.1,
+  "min_path_doors": 0,
+  "monsters": [
+   0,
+   0
+  ],
+  "n_locks": [
+   0,
+   0
+  ],
+  "n_rooms": [
+   2,
+   5
+  ],
+  "room_height": [
+   128,
+   256
+  ],
+  "room_size": [
+   5,
+   14
+  ],
+  "roster_level": 0,
+  "shapes": [
+   [
+    "rect",
+    1.0
+   ],
+   [
+    "l",
+    2.0
+   ],
+   [
+    "pillars",
+    1.5
+   ],
+   [
+    "cross",
+    1.5
+   ],
+   [
+    "octagon",
+    1.5
+   ],
+   [
+    "ring",
+    1.5
+   ]
+  ],
+  "skull_prob": 0.3,
+  "slot_size": [
+   14,
+   22
+  ],
+  "stage": "locomotion",
+  "straight_prob": 0.3,
+  "tier": 2,
+  "weapons": [
+   0,
+   0
+  ]
+ },
+ "config_key": "",
+ "corridor_count": 4,
+ "corridors": [
+  {
+   "a": 1,
+   "b": 2,
+   "door": "none",
+   "door_sector": -1,
+   "id": 0,
+   "on_path": true,
+   "sectors": [
+    5
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 2,
+   "b": 3,
+   "door": "none",
+   "door_sector": -1,
+   "id": 1,
+   "on_path": false,
+   "sectors": [
+    6
+   ],
+   "tree": true,
+   "width": 2
+  },
+  {
+   "a": 1,
+   "b": 0,
+   "door": "none",
+   "door_sector": -1,
+   "id": 2,
+   "on_path": true,
+   "sectors": [
+    7
+   ],
+   "tree": true,
+   "width": 3
+  },
+  {
+   "a": 0,
+   "b": 4,
+   "door": "none",
+   "door_sector": -1,
+   "id": 3,
+   "on_path": false,
+   "sectors": [
+    8
+   ],
+   "tree": true,
+   "width": 3
+  }
+ ],
+ "doors": [],
+ "episode_ticks": 2100,
+ "episode_ticks_range": [
+  2100,
+  4200
+ ],
+ "exit": {
+  "kind": "pad",
+  "room": 2,
+  "sector": 9,
+  "x": 832,
+  "y": 352
+ },
+ "family": "b",
+ "generator": "doomsday-udmfgen",
+ "generator_version": 1,
+ "grid": [
+  52,
+  54
+ ],
+ "items": [],
+ "keys": [],
+ "locked_doors": [],
+ "map": "MAP01",
+ "monsters": [],
+ "num_doors": 0,
+ "num_keys": 0,
+ "num_linedefs": 78,
+ "num_locked_doors": 0,
+ "num_monsters": 0,
+ "num_sectors": 10,
+ "num_sidedefs": 92,
+ "num_things": 1,
+ "num_vertices": 70,
+ "path_rooms": [
+  0,
+  1,
+  2
+ ],
+ "room_count": 5,
+ "rooms": [
+  {
+   "area_cells": 48,
+   "arena": false,
+   "bbox_cells": [
+    5,
+    24,
+    13,
+    30
+   ],
+   "ceiling": 216,
+   "floor": 24,
+   "id": 0,
+   "sector": 0,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 25,
+   "arena": false,
+   "bbox_cells": [
+    6,
+    6,
+    11,
+    11
+   ],
+   "ceiling": 216,
+   "floor": 0,
+   "id": 1,
+   "sector": 1,
+   "shape": "rect"
+  },
+  {
+   "area_cells": 70,
+   "arena": false,
+   "bbox_cells": [
+    22,
+    5,
+    31,
+    13
+   ],
+   "ceiling": 168,
+   "floor": 16,
+   "id": 2,
+   "sector": 2,
+   "shape": "pillars"
+  },
+  {
+   "area_cells": 42,
+   "arena": false,
+   "bbox_cells": [
+    37,
+    7,
+    46,
+    13
+   ],
+   "ceiling": 144,
+   "floor": 0,
+   "id": 3,
+   "sector": 3,
+   "shape": "octagon"
+  },
+  {
+   "area_cells": 68,
+   "arena": false,
+   "bbox_cells": [
+    7,
+    38,
+    15,
+    47
+   ],
+   "ceiling": 208,
+   "floor": 0,
+   "id": 4,
+   "sector": 4,
+   "shape": "octagon"
+  }
+ ],
+ "seed": 1001,
+ "solvability": {
+  "exit_reachable": true,
+  "keys_collected": [],
+  "keys_necessary": {},
+  "method": "vertex flood fill on the emitted cell grid with key fixpoint (generator-internal)",
+  "reachable_vertices": 257,
+  "solvable": true
+ },
+ "solvable": true,
+ "source_group": "udmfgen:locomotion-b-v1",
+ "stage": "locomotion",
+ "start": {
+  "angle": 286,
+  "room": 0,
+  "x": 312,
+  "y": 872
+ },
+ "tier": 2,
+ "wad_sha256": "c6d655feb1aabfa1ce92211ed2899ead3f5338524e868570ed0e47b25a5a2c30"
+}

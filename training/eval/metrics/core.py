@@ -173,3 +173,7 @@ def classify_failure(m: dict) -> str:
     if m["core.max_no_new_cell_steps"] >= 0.5 * m["core.steps"]:
         return "timeout_looping"
     return "timeout_exploring"
+
+
+# Plug-in registry entry (docs/MODULE_CONTRACTS.md §7): every metric module exports METRICS: list[MetricFn].
+METRICS: list[MetricFn] = [core_metrics]

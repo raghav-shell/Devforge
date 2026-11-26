@@ -14,6 +14,7 @@ reports/eval/test_access_log.jsonl before any episode is played.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import datetime as dt
 import hashlib
 import json
@@ -30,7 +31,8 @@ import numpy as np
 
 from . import splits
 from .inventory import map_inventory
-from .metrics.core import EpisodeTrace, classify_failure, core_metrics
+from .metrics import run_all
+from .metrics.core import EpisodeTrace, classify_failure
 from .proxy_score import PROXY_VERSION, TIER_WEIGHT, proxy_components
 from .stats import cluster_bootstrap
 
@@ -156,7 +158,7 @@ def play(agent: AgentProc | None, entry: dict, seed: int, record: Path | None) -
                 break
     finally:
         env.close()
-    m = core_metrics(tr, inv)
+    m = run_all(tr, inv)  # ALL_METRICS: core first, then expl./combat. plug-ins (MODULE_CONTRACTS §7)
     m.update(proxy_components(m))
     m["core.failure_class"] = classify_failure(m)
     timing = {"agent_s": sum(lat), "budget_s": budget, "p50_ms": 1000 * float(np.median(lat)) if lat else 0.0,
@@ -164,11 +166,32 @@ def play(agent: AgentProc | None, entry: dict, seed: int, record: Path | None) -
     return m, tr, timing
 
 
+MEAN_KEYS = ("proxy.score", "core.cell_coverage", "core.area_coverage", "core.health_end", "core.steps", "core.stuck_steps_frac",
+             "core.kills", "core.keys_picked", "core.doors_opened", "core.locked_opened", "core.env_return")
+
+
+def per_tier(rows: list[dict]) -> dict:
+    """Unweighted per-tier aggregates (every episode counted; the CI is per tier, cluster bootstrap over maps)."""
+    out = {}
+    for t in sorted({r["tier"] for r in rows}, key=lambda v: (v is None, v)):
+        rs = [r for r in rows if r["tier"] == t]
+        by_map: dict[str, list[float]] = {}
+        for r in rs:
+            by_map.setdefault(r["map"], []).append(r["proxy.score"])
+        pt, lo, hi = cluster_bootstrap(by_map)
+        out[str(t)] = {"n_maps": len(by_map), "n_episodes": len(rs), "proxy_mean": pt, "proxy_ci95": [lo, hi],
+                       "completion_rate": float(np.mean([r["core.completed"] for r in rs])),
+                       "survival_rate": float(np.mean([r["core.survived"] for r in rs])),
+                       "cell_coverage": float(np.mean([r["core.cell_coverage"] for r in rs]))}
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--split", required=True, choices=splits.SPLITS)
     ap.add_argument("--seeds", type=int, nargs="*")
     ap.add_argument("--only", nargs="*", help="map ids to run (default: all, manifest order)")
+    ap.add_argument("--groups", nargs="*", help="source_group globs to run, e.g. 'udmfgen:*-b-v*' (manifest order kept)")
     ap.add_argument("--mode", default="default", choices=["default", "sample", "greedy"],
                     help="inference mode passed via DOOM_AGENT_INFERENCE (PROPOSED CONTRACT, §9.2)")
     ap.add_argument("--device", default="cpu")
@@ -187,7 +210,8 @@ def main() -> int:
         print("manifest problems:\n  " + "\n  ".join(probs), file=sys.stderr)
         return 2
     man = splits.load(args.split)
-    entries = [e for e in man["maps"] if not args.only or e["id"] in args.only]
+    entries = [e for e in man["maps"] if (not args.only or e["id"] in args.only)
+               and (not args.groups or any(fnmatch.fnmatchcase(e["source_group"], g) for g in args.groups))]
     if not entries:
         print("no maps selected", file=sys.stderr)
         return 2
@@ -199,7 +223,9 @@ def main() -> int:
     out = ROOT / "runs" / OWNER / run_id
     out.mkdir(parents=True, exist_ok=True)
     header = {"run_id": run_id, "utc": stamp, "split": args.split, "seeds": seeds, "mode": args.mode,
-              "maps": [e["id"] for e in entries], "purpose": args.purpose, "argv": sys.argv, **prov}
+              "maps": [e["id"] for e in entries], "subset": bool(args.only or args.groups),
+              "manifest_status": man.get("status", "unspecified"), "manifest_incomplete": bool(man.get("incomplete", False)),
+              "purpose": args.purpose, "argv": sys.argv, **prov}
     if args.split == "test":
         TEST_LOG.parent.mkdir(parents=True, exist_ok=True)
         with open(TEST_LOG, "a") as f:
@@ -247,10 +273,12 @@ def main() -> int:
         "env_return_mean": float(np.mean([r["core.env_return"] for r in rows])),
         "agent_failures": sum(bool(r["core.agent_failure"]) for r in rows),
         "failure_classes": {c: sum(r["core.failure_class"] == c for r in rows) for c in sorted({r["core.failure_class"] for r in rows})},
+        "means": {k: float(np.nanmean([float(r[k]) for r in rows])) for k in MEAN_KEYS},
+        "per_tier": per_tier(rows),
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2, default=float))
     print(json.dumps({k: summary[k] for k in ("run_id", "n_episodes", "proxy_suite", "completion_rate", "survival_rate",
-                                              "env_return_mean", "agent_failures", "failure_classes")}, indent=2, default=float))
+                                              "env_return_mean", "agent_failures", "failure_classes", "means", "per_tier")}, indent=2, default=float))
     print(f"outputs: {out}")
     return 0
 

@@ -1,0 +1,98 @@
+{
+  "aux": {
+    "heads": [],
+    "weight": 0.25
+  },
+  "env": {
+    "envs_per_worker": 8,
+    "episodes_per_map": 4,
+    "manifests": [
+      "maps/splits/smoke.json"
+    ],
+    "mods": [],
+    "num_workers": 8,
+    "randomize_ticks": true,
+    "render_buffers": false,
+    "return_privileged": false,
+    "seed_base": 0,
+    "step_threads": true
+  },
+  "model": {},
+  "obs": {},
+  "ppo": {
+    "adam_eps": 1e-05,
+    "bptt_chunk": 0,
+    "clip_eps": 0.2,
+    "ent_coef": 0.005,
+    "ent_coef_final": 0.001,
+    "epochs": 3,
+    "gae_lambda": 0.95,
+    "gamma": 0.995,
+    "lr": 0.0003,
+    "lr_decay_frac": 0.0,
+    "lr_final": 0.0001,
+    "max_grad_norm": 0.5,
+    "norm_adv": true,
+    "num_envs": 64,
+    "num_minibatches": 4,
+    "ratio_check_fail": true,
+    "ratio_check_tol": 1e-05,
+    "return_norm": true,
+    "reward_clip": 10.0,
+    "rollout_len": 128,
+    "target_kl": 0.03,
+    "total_steps": 10000000,
+    "value_clip": false,
+    "value_clip_eps": 0.2,
+    "vf_coef": 0.5
+  },
+  "reward": {
+    "terms": [
+      {
+        "name": "cell_visit",
+        "params": {
+          "cell": 64
+        },
+        "weight": 0.05
+      },
+      {
+        "name": "exit_reached",
+        "weight": 10.0
+      },
+      {
+        "name": "key_pickup",
+        "weight": 3.0
+      },
+      {
+        "name": "door_open",
+        "weight": 1.0
+      },
+      {
+        "name": "locked_door_open",
+        "weight": 3.0
+      },
+      {
+        "name": "kill",
+        "weight": 0.5
+      },
+      {
+        "name": "damage_taken",
+        "weight": -0.01
+      },
+      {
+        "name": "death",
+        "weight": -3.0
+      }
+    ]
+  },
+  "run": {
+    "ckpt_every": 50,
+    "device": "cpu",
+    "log_every": 1,
+    "out_root": "runs/rl-training-engineer",
+    "run_id": "",
+    "seed": 0,
+    "tensorboard": true,
+    "torch_threads": 2
+  }
+}
