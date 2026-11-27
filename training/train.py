@@ -117,7 +117,8 @@ def build_fake(cfg: TrainConfig):
 
 
 def run(cfg: TrainConfig, *, fake: bool = False, resume: str | None = None, max_updates: int | None = None,
-        run_dir: str | Path | None = None, max_minutes: float | None = None) -> Path:
+        run_dir: str | Path | None = None, max_minutes: float | None = None,
+        resume_overrides: list[str] | None = None) -> Path:
     if resume:
         rpath = Path(resume)
         ck = latest_checkpoint(rpath) if rpath.is_dir() else rpath
@@ -125,6 +126,8 @@ def run(cfg: TrainConfig, *, fake: bool = False, resume: str | None = None, max_
             raise FileNotFoundError(f"no checkpoint under {resume}")
         ckpt = load_checkpoint(ck)
         cfg = TrainConfig.from_dict(ckpt["train_config"])
+        if resume_overrides:  # fine-tune: the checkpoint's config, then the caller's --set overrides on top
+            cfg = cfg.with_overrides(resume_overrides)
         run_dir = Path(run_dir) if run_dir else (ck.parent.parent if rpath.is_file() else rpath)
     else:
         ckpt = None
@@ -194,7 +197,8 @@ def main(argv: list[str] | None = None) -> int:
     if a.run_id:
         cfg.run.run_id = a.run_id
     try:
-        run_dir = run(cfg, fake=a.fake, resume=a.resume, max_updates=a.updates, max_minutes=a.max_minutes)
+        run_dir = run(cfg, fake=a.fake, resume=a.resume, max_updates=a.updates, max_minutes=a.max_minutes,
+                      resume_overrides=a.set if a.resume else None)
     except MissingIntegration as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 2

@@ -2,8 +2,8 @@
   "action_space_version": "1.0.0",
   "default_inference": "sample",
   "format_version": "export-1",
-  "git_commit": "269d0313e9e0114f53dd29eb1f6cadf4cf55304d",
-  "global_step": 6553600,
+  "git_commit": "a20f6d569dd26f972e276b51636a0ea92c5a5416",
+  "global_step": 12492800,
   "inference_temperature": 1.0,
   "obs_config": {
     "enable_depth_band": false,
@@ -31,5 +31,5 @@
     "use_depth_band": false,
     "use_egomap": false
   },
-  "source_ckpt_sha256": "30bf5917c21d855d3883bc5e0b23552ce0290e0240fec667abccd59228d6eac3"
+  "source_ckpt_sha256": "ae372ec7517543860f0d1061640999c0f109638d5d4d2aa6ecac3cf41df6d7b6"
 }

@@ -22,6 +22,7 @@ from .base import BaseRewardTerm, StepContext, new_set_bits, register_term
 # A door sector counts as open once its ceiling-to-floor gap fits the player.
 # Same definition as the evaluation metrics (training/eval/metrics/core.py, doom_env PLAYER_HEIGHT).
 PLAYER_HEIGHT = 56.0
+BUTTON_USE = 7  # MultiBinary(9) index of USE (docs/CONTRACT.md section 3; same as training/envs/factory.py)
 
 
 @register_term
@@ -113,3 +114,54 @@ class Death(BaseRewardTerm):
         if ctx.terminated and ctx.priv.get("dead") and self._paid.first("dead"):
             return 1.0
         return 0.0
+
+
+@register_term
+class DoorReversal(BaseRewardTerm):
+    """+1 each time a USE press reverses a moving door (use a negative weight). TRAINING-ONLY.
+
+    Engine quirk (organiser note, 2026-11-27): USE fires only on a 0 -> 1 edge, and pressing it on a moving
+    door reverses that door. Same detection as the D11 diagnostic in `training/envs/factory.py`
+    (`TrainEnv._track_doors`): a door sector that was moving on the step before a USE rising edge and
+    moves the opposite way within that step or the next one. A door closing by itself after its delay
+    is never counted (no USE edge). This is a learning signal only; nothing masks or overrides actions.
+    """
+
+    name = "door_reversal"
+
+    def on_reset(self, priv0: dict, obs0: dict, inventory: dict, spec: Any) -> None:
+        doors = inventory.get("door_sectors") or {}
+        self._doors = np.asarray(sorted(int(s) for s in doors), np.int64)
+        self._ceil = self._ceil_of(priv0)
+        self._vel = np.zeros(len(self._doors))
+        self._prev_use = 0
+        self._pending: tuple[np.ndarray, np.ndarray] | None = None
+
+    def _ceil_of(self, priv: dict) -> np.ndarray:
+        ceil = priv.get("sector_ceiling")
+        if ceil is None or not len(self._doors):
+            return np.zeros(len(self._doors))
+        return np.asarray(ceil, np.float64)[self._doors].copy()
+
+    def value(self, ctx: StepContext) -> float:
+        use = int(ctx.action_mb[BUTTON_USE])
+        edge = use == 1 and self._prev_use == 0
+        self._prev_use = use
+        if not len(self._doors):
+            return 0.0
+        ceil = self._ceil_of(ctx.priv)
+        vel = np.sign(ceil - self._ceil)
+        n = 0
+        if self._pending is not None:  # moving doors from last step's edge that may flip one step late
+            idx, sign = self._pending
+            n += int((vel[idx] == -sign).sum())
+            self._pending = None
+        if edge:
+            moving = np.flatnonzero(self._vel != 0)
+            flipped = vel[moving] == -self._vel[moving]
+            n += int(flipped.sum())
+            rest = moving[~flipped]
+            if len(rest):
+                self._pending = (rest, self._vel[rest])
+        self._ceil, self._vel = ceil, vel
+        return float(n)

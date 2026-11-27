@@ -124,7 +124,9 @@ def test_reset_gives_reproducible_per_map_streams(agent_mod, env, monkeypatch):
         for _ in range(60):
             a = agent.act(obs)
             acts.append(a.copy())
-            obs, *_ = env.step(a)
+            obs, _r, term, trunc, _ = env.step(a)
+            if term or trunc:  # a trained agent can finish two_rooms inside 60 steps
+                break
         seqs.append(np.stack(acts))
     assert np.array_equal(seqs[0], seqs[1])
 

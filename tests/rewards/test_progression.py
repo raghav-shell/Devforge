@@ -146,3 +146,31 @@ def test_real_walk_on_generated_keys_map_pays_each_event_once(seed, tmp_path):
     assert totals["door_open"] <= gm.meta["num_doors"]
     assert totals["exit_reached"] == 1.0
     assert totals["death"] == 0.0
+
+
+def test_door_reversal_counts_use_edge_on_moving_door_only():
+    from training.rewards.progression import DoorReversal
+
+    t = DoorReversal()
+    inv = {"door_sectors": {1: 0}}
+    use, noop = np.zeros(9, np.int8), np.zeros(9, np.int8)
+    use[7] = 1
+
+    def st(c1):
+        return _priv(ceil=(128.0, c1, 0.0))
+
+    def step(prev, cur, a):
+        return t(StepContext(priv_prev=prev, priv=cur, obs={}, action_mb=a, terminated=False, truncated=False,
+                             env_reward=0.0, info={}, step=1))
+
+    t.reset(st(0.0), {}, inv, None)
+    assert step(st(0.0), st(8.0), noop) == 0.0    # door starts rising by itself
+    assert step(st(8.0), st(4.0), use) == 1.0     # USE edge while rising -> it now falls: reversal
+    assert step(st(4.0), st(0.0), use) == 0.0     # USE held (no edge): nothing
+    assert step(st(0.0), st(0.0), noop) == 0.0
+    assert step(st(0.0), st(8.0), use) == 0.0     # edge on a door at rest: opening it is fine
+    assert step(st(8.0), st(16.0), noop) == 0.0
+    assert step(st(16.0), st(16.0), use) == 0.0   # edge while rising, pauses this step...
+    assert step(st(16.0), st(8.0), noop) == 1.0   # ...and flips one step late: counted
+    t.reset(st(0.0), {}, {"door_sectors": {}}, None)
+    assert step(st(0.0), st(8.0), use) == 0.0     # no doors on the map
